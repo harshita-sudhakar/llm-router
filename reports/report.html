@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>LLM Router Eval Report</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a2e; --muted: #6b7280; --border: #e5e7eb;
+    --card-bg: #f9fafb; --accent: #2563eb; --good: #16a34a; --bad: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 2rem; line-height: 1.5; }
+  .container { max-width: 960px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+  .subtitle { color: var(--muted); margin-bottom: 2rem; font-size: 0.9rem; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+  .stat-value { font-size: 1.75rem; font-weight: 600; }
+  .stat-label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  .good { color: var(--good); }
+  section { margin-bottom: 2rem; }
+  h2 { font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 500; font-size: 0.8rem; text-transform: uppercase; }
+  .tier-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .table-wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>LLM Router Eval Report</h1>
+  <p class="subtitle">106 test cases &middot; router vs. always-opus baseline &middot; run 2026-08-17 02:46 UTC</p>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-value">88.7%</div>
+      <div class="stat-label">Routing accuracy</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value good">39.7%</div>
+      <div class="stat-label">Cost savings vs opus</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value good">22.6%</div>
+      <div class="stat-label">Latency savings vs opus</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">$1.365</div>
+      <div class="stat-label">Router total cost</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">$2.265</div>
+      <div class="stat-label">Always-opus total cost</div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Tier distribution (router)</h2>
+    <div class="table-wrap">
+    <table><thead><tr><th>Tier</th><th>Count</th><th>%</th></tr></thead>
+    <tbody><tr><td><span class="tier-dot" style="background:#2563eb"></span>haiku</td><td>30</td><td>28.3%</td></tr><tr><td><span class="tier-dot" style="background:#dc2626"></span>opus</td><td>48</td><td>45.3%</td></tr><tr><td><span class="tier-dot" style="background:#7c3aed"></span>sonnet</td><td>28</td><td>26.4%</td></tr></tbody></table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Accuracy by category</h2>
+    <div class="table-wrap">
+    <table><thead><tr><th>Category</th><th>Correct</th><th>%</th></tr></thead>
+    <tbody><tr><td>ambiguous</td><td>8/12</td><td>67%</td></tr><tr><td>code_generation</td><td>15/15</td><td>100%</td></tr><tr><td>domain_specific</td><td>3/10</td><td>30%</td></tr><tr><td>mid_conversation_escalation</td><td>9/9</td><td>100%</td></tr><tr><td>moderate_reasoning</td><td>14/15</td><td>93%</td></tr><tr><td>multi_step</td><td>10/10</td><td>100%</td></tr><tr><td>short_followup</td><td>10/10</td><td>100%</td></tr><tr><td>simple_factual</td><td>15/15</td><td>100%</td></tr><tr><td>tool_use</td><td>10/10</td><td>100%</td></tr></tbody></table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Accuracy by decision source</h2>
+    <div class="table-wrap">
+    <table><thead><tr><th>Source</th><th>Correct</th><th>%</th></tr></thead>
+    <tbody><tr><td>classifier</td><td>53/64</td><td>83%</td></tr><tr><td>escalation_rule</td><td>41/42</td><td>98%</td></tr></tbody></table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Failure analysis (misrouted cases)</h2>
+    <div class="table-wrap">
+    <table><thead><tr><th>ID</th><th>Category</th><th>Ground truth</th><th>Predicted</th><th>Source</th><th>Reason</th></tr></thead>
+    <tbody><tr><td>moderate_03</td><td>moderate_reasoning</td><td><span class="tier-dot" style="background:#7c3aed"></span>sonnet</td><td><span class="tier-dot" style="background:#dc2626"></span>opus</td><td>escalation_rule</td><td>escalation_code_generation</td></tr><tr><td>domain_02</td><td>domain_specific</td><td><span class="tier-dot" style="background:#dc2626"></span>opus</td><td><span class="tier-dot" style="background:#7c3aed"></span>sonnet</td><td>classifier</td><td>classifier_judgment</td></tr><tr><td>domain_03</td><td>domain_specific</td><td><span class="tier-dot" style="background:#dc2626"></span>opus</td><td><span class="tier-dot" style="background:#7c3aed"></span>sonnet</td><td>classifier</td><td>classifier_judgment</td></tr><tr><td>domain_05</td><td>domain_specific</td><td><span class="tier-dot" style="background:#dc2626"></span>opus</td><td><span class="tier-dot" style="background:#7c3aed"></span>sonnet</td><td>classifier</td><td>classifier_judgment</td></tr><tr><td>domain_06</td><td>domain_specific</td><td><span class="tier-dot" style="background:#dc2626"></span>opus</td><td><span class="tier-dot" style="background:#7c3aed"></span>sonnet</td><td>classifier</td><td>classifier_judgment</td></tr><tr><td>domain_07</td><td>domain_specific</td><td><span class="tier-dot" style="background:#dc2626"></span>opus</td><td><span class="tier-dot" style="background:#7c3aed"></span>sonnet</td><td>classifier</td><td>classifier_judgment</td></tr><tr><td>domain_09</td><td>domain_specific</td><td><span class="tier-dot" style="background:#dc2626"></span>opus</td><td><span class="tier-dot" style="background:#7c3aed"></span>sonnet</td><td>classifier</td><td>classifier_judgment</td></tr><tr><td>domain_10</td><td>domain_specific</td><td><span class="tier-dot" style="background:#dc2626"></span>opus</td><td><span class="tier-dot" style="background:#7c3aed"></span>sonnet</td><td>classifier</td><td>classifier_judgment</td></tr><tr><td>ambig_03</td><td>ambiguous</td><td><span class="tier-dot" style="background:#7c3aed"></span>sonnet</td><td><span class="tier-dot" style="background:#2563eb"></span>haiku</td><td>classifier</td><td>classifier_judgment</td></tr><tr><td>ambig_04</td><td>ambiguous</td><td><span class="tier-dot" style="background:#dc2626"></span>opus</td><td><span class="tier-dot" style="background:#7c3aed"></span>sonnet</td><td>classifier</td><td>classifier_judgment</td></tr><tr><td>ambig_06</td><td>ambiguous</td><td><span class="tier-dot" style="background:#7c3aed"></span>sonnet</td><td><span class="tier-dot" style="background:#2563eb"></span>haiku</td><td>classifier</td><td>classifier_judgment</td></tr><tr><td>ambig_11</td><td>ambiguous</td><td><span class="tier-dot" style="background:#dc2626"></span>opus</td><td><span class="tier-dot" style="background:#7c3aed"></span>sonnet</td><td>classifier</td><td>classifier_judgment</td></tr></tbody></table>
+    </div>
+  </section>
+</div>
+</body>
+</html>
