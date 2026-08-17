@@ -15,8 +15,8 @@ README documents what's built so far (Week 1: core routing logic).
 ## Status
 
 - [x] **Week 1** — core routing logic (this README)
-- [ ] Week 2 — eval harness (labeled test set, accuracy/cost/latency vs. an always-Opus baseline)
-- [ ] Week 3 — edge cases (mid-conversation shifts, report generation)
+- [x] Week 2 — eval harness (labeled test set, accuracy/cost/latency vs. an always-Opus baseline)
+- [x] Week 3 — edge cases (mid-conversation shifts, report generation)
 - [ ] Week 4 (stretch) — trained classifier v2
 
 ## How it works
