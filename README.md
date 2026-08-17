@@ -1,5 +1,7 @@
 # LLM Routing
 
+**[View the latest eval report](https://harshita-sudhakar.github.io/llm-router/reports/report.html)**
+
 A routing layer that sits in front of the Anthropic API and picks which
 model tier (Haiku / Sonnet / Opus) handles each turn of a conversation,
 based on task complexity — aiming to cut cost and latency on simple tasks
@@ -14,7 +16,7 @@ README documents what's built so far (Week 1: core routing logic).
 
 ## Status
 
-- [x] **Week 1** — core routing logic (this README)
+- [x] Week 1 — core routing logic (this README)
 - [x] Week 2 — eval harness (labeled test set, accuracy/cost/latency vs. an always-Opus baseline)
 - [x] Week 3 — edge cases (mid-conversation shifts, report generation)
 - [ ] Week 4 — trained classifier v2
